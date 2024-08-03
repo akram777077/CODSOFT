@@ -1,3 +1,4 @@
+#pragma once
 #include<iostream>
 #include<string>
 #include<sstream>
@@ -53,5 +54,21 @@ class clsResult
             std::istringstream iss(line);
             iss >> arr[0] >> arr[1] >> arr[2] >> arr[3];
             return new clsResult(arr[0],arr[1],arr[2],arr[3]);
+        }
+        int getTargetNumber()
+        {
+            return targetNumber;
+        }
+        int getStart()
+        {
+            return start;
+        }
+        int getEnd()
+        {
+            return end;
+        }
+        int getNumberOfRound()
+        {
+            return numberRound;
         }
 };
