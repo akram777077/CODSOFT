@@ -19,6 +19,7 @@ class clsScreens
         std::cout << "Good luck!\n";
         std::cout << "[1] start game.\n";
         std::cout << "[2] show high score.\n";
+        std::cout << "[3] delete high score.\n";
         std::cout << "[0] Exit.\n";
     }
     static void showHighScore(bool isHigh,clsResult* result = nullptr)

@@ -2,7 +2,7 @@
 #include"clsValidation.h"
 #include"clsResult.h"
 #include"clsGame.h"
-enum enChois{ex=0,startGame,showHighScore};
+enum enChois{ex=0,startGame,showHighScore,deleteHighScore};
 std::string clsResult::fileName="test1.txt";
 class clsStartGame
 {
@@ -55,9 +55,9 @@ class clsStartGame
             do
             {
                 std::cout<<"[end] -> ";
-                result = clsValidation::IsBetween(end,start,std::numeric_limits<int>::max());
+                result = clsValidation::IsBetween(end,start+1,std::numeric_limits<int>::max());
                 if(!result)
-                    std::cout<<"[System] -> enter valid number please ["<<start<<","<<std::numeric_limits<int>::max()<<"]\n";
+                    std::cout<<"[System] -> enter valid number please ["<<start+1<<","<<std::numeric_limits<int>::max()<<"]\n";
             } while (!result);
             
         }
@@ -102,8 +102,22 @@ class clsStartGame
                 case enChois::showHighScore:
                     showHighScoreScreen();
                     break;
+                case enChois::deleteHighScore:
+                    deleteHighScore();
+                    break;
+                
             }
         }
+        static void deleteHighScore()
+        {
+            if (std::remove(clsResult::fileName.c_str()) == 0) {
+                std::cout << "[System] -> The High score is deleted..\n";
+            } else {
+                std::cout << "[System] -> Error: Unable to open the file.\n";
+            }
+            clsScreens::pressEnter();
+        }
+
         static void NewGame()
         {
             do
@@ -115,9 +129,9 @@ class clsStartGame
                 do
                 {
                     std::cout<<"[Chois] -> ";
-                    result = clsValidation::IsBetween(chois,0,2);
+                    result = clsValidation::IsBetween(chois,0,3);
                     if(!result)
-                        std::cout<<"[System] -> enter valid number please [0,2]\n";
+                        std::cout<<"[System] -> enter valid number please [0,3]\n";
                 }while (!result);
                 doWithChois((enChois)chois);
             }while(1);
