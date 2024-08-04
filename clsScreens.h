@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include<iomanip>
+#include"clsResult.h"
+#include<limits>
 class clsScreens
 {
     private:
@@ -39,7 +41,7 @@ class clsScreens
             input="\t"+std::to_string(result->getTargetNumber());
         std::cout<<"|"<<std::setw(20)<<std::left<<input<<"|";
         if(result)
-            input="\t"+std::to_string(result->getNumberOfRound());
+            input="\t"+std::to_string(result->numberRound);
         std::cout<<std::setw(20)<<std::left<<input<<"|";
         if(result)
             input="\t"+std::to_string(result->getStart());
@@ -53,6 +55,12 @@ class clsScreens
     static void clearScreen()
     {
         system("cls");
+    }
+    static void pressEnter()
+    {
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        std::cout<<"Press Any Key to continue...";
+        getchar();
     }
 
 };

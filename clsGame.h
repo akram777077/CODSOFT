@@ -7,6 +7,7 @@ class clsGame
         int number;
         int getRandom(int start,int end)
         {
+            srand(time(0));
             return rand()%(end-start)+start;
         }
     public:
@@ -22,6 +23,10 @@ class clsGame
                 return enRemark::low;
             else
                 return enRemark::found;
+        }
+        int getNumber()
+        {
+            return number;
         }
         
 };

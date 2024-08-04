@@ -7,7 +7,6 @@ class clsResult
 {
     private:
         int targetNumber;
-        int numberRound;
         int start;
         int end;
         std::string toLine() const {
@@ -16,6 +15,7 @@ class clsResult
             return oss.str();
         }
     public:
+        int numberRound;
         void print()
         {
             std::cout<<"target Number: "<<targetNumber;
@@ -66,9 +66,5 @@ class clsResult
         int getEnd()
         {
             return end;
-        }
-        int getNumberOfRound()
-        {
-            return numberRound;
         }
 };
