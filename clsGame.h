@@ -11,9 +11,9 @@ class clsGame
             return rand()%(end-start)+start;
         }
     public:
-        clsGame()
+        clsGame(int start,int end)
         {
-            number = getRandom(0,100);
+            number = getRandom(start,end);
         }
         enRemark getRemark(int inputGuess)
         {

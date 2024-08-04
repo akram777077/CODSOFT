@@ -14,13 +14,12 @@ class clsScreens
     static void showMain() {
         std::cout << "Welcome to the Number Guessing Game!\n";
         std::cout << "------------------------------------\n";
-        std::cout << "Try to guess the secret number between 1 and 100.\n";
+        std::cout << "Try to guess the secret number between start and end (start , end ) is input from user.\n";
         std::cout << "You will be prompted if your guess is too high or too low.\n";
         std::cout << "Good luck!\n";
         std::cout << "[1] start game.\n";
         std::cout << "[2] show high score.\n";
         std::cout << "[0] Exit.\n";
-
     }
     static void showHighScore(bool isHigh,clsResult* result = nullptr)
     {
@@ -61,6 +60,14 @@ class clsScreens
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cout<<"Press Any Key to continue...";
         getchar();
+    }
+    static void showRangeInputScreen() {
+        std::cout << "Enter the range for guessing the secret number.\n";
+        std::cout << "---------------------------------------------\n";
+        std::cout << "The valid range for a 32-bit signed integer is from " 
+                << std::numeric_limits<int>::min() << " to " 
+                << std::numeric_limits<int>::max() << ".\n";
+        std::cout << "Please enter the start and end points of your desired range.\n";
     }
 
 };

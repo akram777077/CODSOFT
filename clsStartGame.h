@@ -16,16 +16,16 @@ class clsStartGame
             return "Too Low !";
         }
 
-        static int getInputUser()
+        static int getInputUser(int start,int end)
         {
             int input = 0;
             bool result;
             do
             {
                 std::cout<<"[Enter] -> ";
-                result = clsValidation::IsBetween(input,0,100);
+                result = clsValidation::IsBetween(input,start,end);
                 if(!result)
-                    std::cout<<"[System] -> enter valid number please [0,100]\n";
+                    std::cout<<"[System] -> enter valid number please ["<<start<<","<<end<<"]\n";
             }while(!result);
             return input;
         }
@@ -41,19 +41,45 @@ class clsStartGame
             clsScreens::pressEnter();
             
         }
+        static void gameRange(int& start,int& end)
+        {
+            clsScreens::showRangeInputScreen();
+            bool result = 1;
+            do
+            {
+                std::cout<<"[start] -> ";
+                result = clsValidation::IsBetween(start,std::numeric_limits<int>::min(),std::numeric_limits<int>::max());
+                if(!result)
+                    std::cout<<"[System] -> enter valid number please ["<<std::numeric_limits<int>::min()<<","<<std::numeric_limits<int>::max()<<"]\n";
+            } while (!result);
+            do
+            {
+                std::cout<<"[end] -> ";
+                result = clsValidation::IsBetween(end,start,std::numeric_limits<int>::max());
+                if(!result)
+                    std::cout<<"[System] -> enter valid number please ["<<start<<","<<std::numeric_limits<int>::max()<<"]\n";
+            } while (!result);
+            
+        }
         static void startGame()
         {
-            clsGame game;
+            int start=0,end=0;
+            gameRange(start,end);
+            clsScreens::pressEnter();
+            clsScreens::clearScreen();
+            printf("Start Guessing Number from %d to %d!\n",start,end);
+            std::cout << "------------------------------------\n";
+            clsGame game(start,end);
             enRemark remark;
             int count = 0;
             do 
             {
-                remark = game.getRemark(getInputUser());
+                remark = game.getRemark(getInputUser(start,end));
                 std::cout<<"[Game "<<++count<<" ] -> "<<feedBack(remark)<<"\n";
                 
             }while(remark!=enRemark::found);
             std::cout<<"[Game] -> You found the number "<<game.getNumber()<<" after "<<count<<" time(s)\n";
-            clsResult result(game.getNumber(),count,0,100);
+            clsResult result(game.getNumber(),count,start,end);
             clsScreens::pressEnter();
             showScore(result);
         }
