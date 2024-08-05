@@ -3,7 +3,7 @@
 #include"clsResult.h"
 #include"clsGame.h"
 enum enChois{ex=0,startGame,showHighScore,deleteHighScore};
-std::string clsResult::fileName="test1.txt";
+std::string clsResult::fileName="game.txt";
 class clsStartGame
 {
     private:
