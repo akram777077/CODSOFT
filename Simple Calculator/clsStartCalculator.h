@@ -1,7 +1,7 @@
 #include"clsScreens.h"
 #include"../Number Guessing Game/clsValidation.h"
 #include"clsCalculator.h"
-std::string clsCalculater::fileName = "test.txt";
+std::string clsCalculater::fileName = "calculator.txt";
 enum enOption {ex=0,startCalculator,showHistory,deleteHistory};
 class clsStartCalculator
 {
