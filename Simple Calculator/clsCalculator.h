@@ -59,7 +59,11 @@ public:
         char mathOperator;
 
         iss >> num1 >> mathOperator >> num2;
-
+            if (num1 < -std::numeric_limits<double>::max() || num1 > std::numeric_limits<double>::max() ||
+                num2 < -std::numeric_limits<double>::max() || num2 > std::numeric_limits<double>::max())
+            {
+                throw std::overflow_error("Overflow or underflow detected in numeric input.");
+            }
         return clsCalculater(num1, num2, mathOperator);
     }
 

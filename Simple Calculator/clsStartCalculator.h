@@ -55,6 +55,9 @@ class clsStartCalculator
     static void calculator()
     {
             system("cls");
+            clsScreens::displayRules();
+            clsScreens::pressEnter();
+            system("cls");
             std::string input="";
             do
             {
@@ -68,7 +71,17 @@ class clsStartCalculator
                 else if(input == "exit")
                     return;
                 std::cout<<" -> ";
-                if(clsCalculater::isDataValide(input))
+                bool test = 1;
+                try
+                {
+                    test = clsCalculater::isDataValide(input);
+                }
+                catch(const std::exception& e)
+                {
+                    std::cout<<"Error: "<<e.what();
+                }
+                
+                if(test)
                 {
                     try
                     {
