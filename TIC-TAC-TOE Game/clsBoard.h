@@ -9,10 +9,10 @@ class clsBoard
         {
             validAccount=0;
         }
-        bool placeMarker(int slot,char currentMarker) 
+        bool placeMarker(short slot,char currentMarker) 
         {
-            int row = (slot - 1) / 3;
-            int col = (slot - 1) % 3;
+            short row = (slot - 1) / 3;
+            short col = (slot - 1) % 3;
 
             if (board[row][col] != 'X' && board[row][col] != 'O'){
                 board[row][col] = currentMarker;
@@ -23,8 +23,8 @@ class clsBoard
         }
         void print() {
             std::cout << "Tic-Tac-Toe Board:" << std::endl;
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
+            for (short i = 0; i < 3; i++) {
+                for (short j = 0; j < 3; j++) {
                     std::cout << board[i][j];
                     if (j < 2) std::cout << " | ";
                 }
@@ -33,7 +33,7 @@ class clsBoard
             std::cout << std::endl;
         }
         char checkWinner() {
-            for (int i = 0; i < 3; i++) {
+            for (short i = 0; i < 3; i++) {
                 // Check rows
                 if (board[i][0] == board[i][1] && board[i][1] == board[i][2])
                     return board[i][0];
