@@ -26,6 +26,10 @@ class clsPlayers
         {
             return player1==mark;
         }
+        bool isMarkOfPlayer2(char mark)
+        {
+            return player2==mark;
+        }
         bool isTurnOfPlayer1()
         {
             return isFirstPlayer;
