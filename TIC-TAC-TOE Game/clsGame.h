@@ -41,5 +41,9 @@ class clsGame
         {
             return players->isTurnOfPlayer1();
         }
+        clsBoard getBoard()
+        {
+            return board;
+        }
 
 };
