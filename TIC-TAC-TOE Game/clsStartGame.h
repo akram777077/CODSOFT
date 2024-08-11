@@ -97,12 +97,19 @@ class clsStartGame
         {
             short count = 0;
             char player1,player2;
-
-            getMarkPlayers(player1,player2);
-            clsBoard board;
-            enResult result = oneGame(player1,player2,count,board);
-            clsScreens::pressEnter();
-            showResult(result,count,board);
+            char again;
+            do
+            {
+                system("cls");
+                getMarkPlayers(player1,player2);
+                clsBoard board;
+                enResult result = oneGame(player1,player2,count,board);
+                clsScreens::pressEnter();
+                showResult(result,count,board);
+                clsScreens::moreGame();
+                again=std::cin.get();
+            }while(again!='n');
+            system("cls");
         }
     public:
         static void start()

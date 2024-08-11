@@ -17,4 +17,9 @@ class clsScreens
         std::cout<<"[2] player 1 with 'O' player 2 with 'x'.\n";
         std::cout<<"----------------------------------------\n";
     }
+    static void moreGame()
+    {
+        std::cout<<"Do you want more game ? \n";
+        std::cout<<"press [n] for No and any char for Yes\n";
+    }
 };
