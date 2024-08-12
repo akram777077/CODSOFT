@@ -1,6 +1,7 @@
 #include"clsGame.h"
 #include"clsScreens.h"
 #include"../Number Guessing Game/clsValidation.h"
+#include <conio.h>
 class clsStartGame
 {
     private:
@@ -93,24 +94,41 @@ class clsStartGame
             std::cout<<"Result game is: "<<resultToString(resultGame)<<std::endl;
             std::cout<<"total moves: "<<numberMoves<<"/9\n";
         }
-        static void pStart()
+        static void game()
         {
-            short count = 0;
             char player1,player2;
             char again;
             do
             {
+                short count = 0;
                 system("cls");
                 getMarkPlayers(player1,player2);
+                system("cls");
+                clsScreens::displayRules();
+                clsScreens::pressEnter();
+                system("cls");
                 clsBoard board;
                 enResult result = oneGame(player1,player2,count,board);
                 clsScreens::pressEnter();
                 showResult(result,count,board);
                 clsScreens::moreGame();
-                again=std::cin.get();
+                again=_getch();
             }while(again!='n');
-            system("cls");
         }
+        
+        static void pStart()
+        {
+            char inGame;
+            do
+            {
+                system("cls");
+                clsScreens::mainScreen();
+                inGame=_getch();
+                if(inGame!='n')
+                    game();
+            }while(inGame!='n');
+        }
+
     public:
         static void start()
         {
