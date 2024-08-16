@@ -1,4 +1,5 @@
 #include <string>
+#include <sstream>
 class clsTask {
 private:
     int id;
@@ -17,6 +18,9 @@ public:
 
     void markComplete();
     void markDelete();
+
+    std::string toLine() const;
+    static clsTask fromLine(const std::string& line);
 };
 clsTask::clsTask(int id, std::string description, bool isComplete)
     : id(id), description(description), isComplete(isComplete), isDeleted(false) {}
@@ -48,4 +52,36 @@ void clsTask::markComplete() {
 
 void clsTask::markDelete() {
     isDeleted = true;
+}
+
+std::string clsTask::toLine() const {
+    std::stringstream ss;
+    ss << id << "|" << description << "|" << isComplete << "|" << isDeleted;
+    return ss.str();
+}
+
+clsTask clsTask::fromLine(const std::string& line) {
+    std::stringstream ss(line);
+    std::string temp;
+    int id;
+    std::string description;
+    bool isComplete;
+    bool isDeleted;
+
+    std::getline(ss, temp, '|');
+    id = std::stoi(temp);
+
+    std::getline(ss, description, '|');
+
+    std::getline(ss, temp, '|');
+    isComplete = std::stoi(temp);
+
+    std::getline(ss, temp, '|');
+    isDeleted = std::stoi(temp);
+
+    clsTask task(id, description, isComplete);
+    if (isDeleted) {
+        task.markDelete();
+    }
+    return task;
 }
