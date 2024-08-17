@@ -56,7 +56,7 @@ void clsTask::markDelete() {
 
 std::string clsTask::toLine() const {
     std::stringstream ss;
-    ss << id << "|" << description << "|" << isComplete << "|" << isDeleted;
+    ss << id << "|" << description << "|" << isComplete;
     return ss.str();
 }
 
@@ -66,7 +66,6 @@ clsTask clsTask::fromLine(const std::string& line) {
     int id;
     std::string description;
     bool isComplete;
-    bool isDeleted;
 
     std::getline(ss, temp, '|');
     id = std::stoi(temp);
@@ -76,12 +75,6 @@ clsTask clsTask::fromLine(const std::string& line) {
     std::getline(ss, temp, '|');
     isComplete = std::stoi(temp);
 
-    std::getline(ss, temp, '|');
-    isDeleted = std::stoi(temp);
-
-    clsTask task(id, description, isComplete);
-    if (isDeleted) {
-        task.markDelete();
-    }
+    clsTask task(id, description,isComplete);
     return task;
 }
