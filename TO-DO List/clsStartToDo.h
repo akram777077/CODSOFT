@@ -63,6 +63,33 @@ class clsStartToDo
             tasks.saveToFile();
             std::cout<<"\n[System] -> The tasks is saved seccess\n";
         }
+        static void completeTaskScreen(clsTasks& tasks)
+        {
+            int id=0;
+            bool isFound=1;
+            bool isValid=1;
+            do 
+            {
+                system("cls");
+                if(!isFound)
+                    std::cout<<"[System] -> the task is not found...\n";
+                do 
+                {
+                    if(!isValid)
+                    {
+                        system("cls");
+                        std::cout<<"[System] -> Enter valid number...\n";
+                    }
+                    std::cout<<"Enter the id of task: ";
+                    isValid=clsValidation::getValidNumber(id);
+
+                }while(!isValid);
+                isFound = tasks.completeTask(id);
+            }while(!isFound);
+            system("cls");
+            std::printf("the task of id %d is completed...\n",id);
+            tasks.saveToFile();
+        }
         static void selectOption(enOptions option,clsTasks& tasks)
         {
             system("cls");
@@ -72,6 +99,7 @@ class clsStartToDo
                 addTaskScreen(tasks);
                 break;
             case enOptions::opCompleteTask:
+                completeTaskScreen(tasks);
                 break;
             case enOptions::opRemoveTask:
                 break;
