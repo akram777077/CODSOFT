@@ -39,6 +39,8 @@ class clsStartToDo
 
             // Print each task
             for (clsTask& task : tasks) {
+                if(task.getIsDeleted())
+                    continue;
                 std::cout<< "|" << std::left << std::setw(10) << task.getId()
                         << " | " << std::setw(50) << task.getDescription()
                         << " | " << std::setw(10) << (task.getIsComplete() ? "Yes" : "No") << "|"
@@ -90,6 +92,33 @@ class clsStartToDo
             std::printf("the task of id %d is completed...\n",id);
             tasks.saveToFile();
         }
+        static void deleteTaskScreen(clsTasks& tasks)
+        {
+            int id=0;
+            bool isFound=1;
+            bool isValid=1;
+            do 
+            {
+                system("cls");
+                if(!isFound)
+                    std::cout<<"[System] -> the task is not found...\n";
+                do 
+                {
+                    if(!isValid)
+                    {
+                        system("cls");
+                        std::cout<<"[System] -> Enter valid number...\n";
+                    }
+                    std::cout<<"Enter the id of task: ";
+                    isValid=clsValidation::getValidNumber(id);
+
+                }while(!isValid);
+                isFound = tasks.deleteTask(id);
+            }while(!isFound);
+            system("cls");
+            std::printf("the task of id %d is deleted...\n",id);
+            tasks.saveToFile();
+        }
         static void selectOption(enOptions option,clsTasks& tasks)
         {
             system("cls");
@@ -102,6 +131,7 @@ class clsStartToDo
                 completeTaskScreen(tasks);
                 break;
             case enOptions::opRemoveTask:
+                deleteTaskScreen(tasks);
                 break;
             case enOptions::opViewTasks:
                 showTasksScreen(tasks.getTasks());
