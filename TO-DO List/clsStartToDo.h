@@ -144,7 +144,7 @@ class clsStartToDo
         }
         static void pStart()
         {
-            clsTasks tasks("test1.txt");
+            clsTasks tasks("tasks.txt");
             do 
             {
                 enOptions chois = getChois();
