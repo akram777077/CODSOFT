@@ -1,117 +1,162 @@
 #include "Books.h"
 #include <stdexcept>
-#include <iostream>
+#include <sstream>
 #include <algorithm>
+#include <ctime>
 
-// Constructor: Initialize the Books object with a database connection
 Books::Books(sqlite3* database) : db(database) {}
 
-// Helper function to execute an SQL statement
 void Books::executeSQL(const std::string& sql) {
-    char* errorMessage = nullptr;
-    int result = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errorMessage);
-    if (result != SQLITE_OK) {
-        std::cerr << "SQL error: " << errorMessage << std::endl;
-        sqlite3_free(errorMessage);
-        throw std::runtime_error("Failed to execute SQL: " + sql);
+    char* errMsg = nullptr;
+    int rc = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &errMsg);
+    if (rc != SQLITE_OK) {
+        std::string error = "SQL error: ";
+        error += errMsg;
+        sqlite3_free(errMsg);
+        throw std::runtime_error(error);
     }
 }
 
-// Load books from the database into the bookList
 void Books::loadBooksFromDB() {
-    std::string sql = "SELECT title, author, isbn, available FROM Books";
+    const char* sql = "SELECT Title, Author, ISBN, Available, CheckoutDate FROM Books;";
     sqlite3_stmt* stmt;
-
-    if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
-        throw std::runtime_error("Failed to prepare statement");
+    
+    int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        throw std::runtime_error("Failed to execute query: " + std::string(sqlite3_errmsg(db)));
     }
 
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
         std::string title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
         std::string author = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
         std::string isbn = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
         bool available = sqlite3_column_int(stmt, 3);
+        std::time_t checkoutDate = sqlite3_column_int64(stmt, 4);
 
-        bookList.emplace_back(title, author, isbn, available);
+        Book book(title, author, isbn, available, checkoutDate);
+        bookList.push_back(book);
     }
 
     sqlite3_finalize(stmt);
 }
 
-// Add a new book to the database and the bookList
 void Books::addBook(const Book& book) {
-    std::string sql = "INSERT INTO Books (title, author, isbn, available) VALUES ('" +
-                      book.getTitle() + "', '" +
-                      book.getAuthor() + "', '" +
-                      book.getISBN() + "', " +
-                      (book.isAvailable() ? "1" : "0") + ")";
-
-    executeSQL(sql);
+    std::ostringstream oss;
+    oss << "INSERT INTO Books (Title, Author, ISBN, Available, CheckoutDate) VALUES ('"
+        << book.getTitle() << "', '"
+        << book.getAuthor() << "', '"
+        << book.getISBN() << "', "
+        << book.isAvailable() << ", "
+        << book.getCheckoutDate() << ");";
+    
+    executeSQL(oss.str());
     bookList.push_back(book);
 }
 
-// Remove a book from the database and the bookList based on ISBN
 void Books::removeBook(const std::string& bookISBN) {
-    std::string sql = "DELETE FROM Books WHERE isbn = '" + bookISBN + "'";
-    executeSQL(sql);
+    std::ostringstream oss;
+    oss << "DELETE FROM Books WHERE ISBN='" << bookISBN << "';";
+    executeSQL(oss.str());
 
-    bookList.erase(
-        std::remove_if(bookList.begin(), bookList.end(), [&bookISBN](const Book& book) {
-            return book.getISBN() == bookISBN;
-        }),
-        bookList.end()
-    );
+    bookList.erase(std::remove_if(bookList.begin(), bookList.end(),
+                  [&bookISBN](const Book& b) { return b.getISBN() == bookISBN; }), bookList.end());
 }
 
-// Update a book's details in the database and the bookList
 void Books::updateBook(const Book& book) {
-    std::string sql = "UPDATE Books SET title = '" + book.getTitle() +
-                      "', author = '" + book.getAuthor() +
-                      "', available = " + (book.isAvailable() ? "1" : "0") +
-                      " WHERE isbn = '" + book.getISBN() + "'";
-
-    executeSQL(sql);
-
-    for (auto& b : bookList) {
-        if (b.getISBN() == book.getISBN()) {
-            b.setTitle(book.getTitle());
-            b.setAuthor(book.getAuthor());
-            b.setAvailability(book.isAvailable());
-            break;
-        }
-    }
+    std::ostringstream oss;
+    oss << "UPDATE Books SET Title='" << book.getTitle()
+        << "', Author='" << book.getAuthor()
+        << "', Available=" << book.isAvailable()
+        << ", CheckoutDate=" << book.getCheckoutDate()
+        << " WHERE ISBN='" << book.getISBN() << "';";
+    
+    executeSQL(oss.str());
 }
 
-// Get all books in the bookList
 const std::vector<Book>& Books::getBooks() const {
     return bookList;
 }
 
-// Get books by search way (byTitle, byAuthor, byISBN) and input
 const std::vector<Book>& Books::getBooksBy(enSearchWay way, const std::string& input) const {
-    static std::vector<Book> filteredBooks;
+    static std::vector<Book> filteredBooks; // To store the search results
     filteredBooks.clear();
 
-    switch (way) {
-        case byTitle:
-            std::copy_if(bookList.begin(), bookList.end(), std::back_inserter(filteredBooks),
-                         [&input](const Book& book) {
-                             return book.getTitle() == input;
-                         });
-            break;
-        case byAuthor:
-            std::copy_if(bookList.begin(), bookList.end(), std::back_inserter(filteredBooks),
-                         [&input](const Book& book) {
-                             return book.getAuthor() == input;
-                         });
-            break;
-        case byISBN:
-            std::copy_if(bookList.begin(), bookList.end(), std::back_inserter(filteredBooks),
-                         [&input](const Book& book) {
-                             return book.getISBN() == input;
-                         });
-            break;
+    // Lambda function to match the input with the appropriate field based on the search way
+    auto match = [&input](const std::string& field) -> bool {
+        return field.find(input) != std::string::npos;
+    };
+
+    // Iterate through the bookList and filter based on the search way
+    for (const auto& book : bookList) {
+        switch (way) {
+            case byTitle:
+                if (match(book.getTitle())) {
+                    filteredBooks.push_back(book);
+                }
+                break;
+            case byAuthor:
+                if (match(book.getAuthor())) {
+                    filteredBooks.push_back(book);
+                }
+                break;
+            case byISBN:
+                if (match(book.getISBN())) {
+                    filteredBooks.push_back(book);
+                }
+                break;
+            default:
+                throw std::invalid_argument("Invalid search way specified.");
+        }
     }
 
     return filteredBooks;
+}
+
+
+void Books::checkoutBook(const std::string& bookISBN) {
+    auto it = std::find_if(bookList.begin(), bookList.end(),
+                           [&bookISBN](const Book& b) { return b.getISBN() == bookISBN; });
+
+    if (it != bookList.end()) {
+        if (it->isAvailable()) {
+            std::time_t now = std::time(nullptr);
+            it->setAvailability(false);
+            it->setCheckoutDate(now);
+
+            std::ostringstream oss;
+            oss << "UPDATE Books SET Available = 0, CheckoutDate = " << now
+                << " WHERE ISBN = '" << bookISBN << "';";
+            executeSQL(oss.str());
+        } else {
+            throw std::runtime_error("Book is already checked out.");
+        }
+    } else {
+        throw std::runtime_error("Book with ISBN " + bookISBN + " not found.");
+    }
+}
+
+void Books::returnBook(const std::string& bookISBN) {
+    auto it = std::find_if(bookList.begin(), bookList.end(),
+                           [&bookISBN](const Book& b) { return b.getISBN() == bookISBN; });
+
+    if (it != bookList.end()) {
+        if (!it->isAvailable()) {
+            it->setAvailability(true);
+            it->setCheckoutDate(0);  // Reset the checkout date
+
+            std::ostringstream oss;
+            oss << "UPDATE Books SET Available = 1, CheckoutDate = NULL"
+                << " WHERE ISBN = '" << bookISBN << "';";
+            executeSQL(oss.str());
+        } else {
+            throw std::runtime_error("Book is already available.");
+        }
+    } else {
+        throw std::runtime_error("Book with ISBN " + bookISBN + " not found.");
+    }
+}
+
+bool Books::isFound(const std::string &bookISBN)
+{
+    return !getBooksBy(enSearchWay::byISBN,bookISBN).empty();
 }
