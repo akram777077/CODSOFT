@@ -110,6 +110,52 @@ class clsStartLibrary
             }
 
     }
+    static void showBooksWithOptions(enSearchWay option,const Books& books,const std::string& text)
+    {
+        std::string input;
+        std::cout<<text;
+        std::getline(std::cin,input);
+        system("cls");
+        showBooksScreen(books.getBooksBy(option,input));
+
+    }
+    static void selectOptionFind(const Books& books)
+    {
+        do 
+        {
+            system("cls");
+            std::vector<std::string> options =
+            {
+                "1. find by title",
+                "2. find by author",
+                "3. find by ISBN",
+                "4. return Main"
+            };
+            int selected = clsScreen::getOptions(options);
+            if(selected==4)
+                return;
+            selectOptionFind((enSearchWay)selected,books);
+        }while(1);
+
+    }
+    static void selectOptionFind(enSearchWay options,const Books& books)
+    {
+        system("cls");
+        switch(options)
+        {
+            case enSearchWay::byISBN:
+                showBooksWithOptions(options,books,"Enter ISBN: ");
+                break;
+            case enSearchWay::byTitle:
+                showBooksWithOptions(options,books,"Enter Title: ");
+                break;
+            case enSearchWay::byAuthor:
+                showBooksWithOptions(options,books,"Enter Author: ");
+                break;   
+        }
+        std::cout<<"Press Any key to coninue";
+        clsScreen::pressKey();
+    }
     static void selectOption(enOption option , Books& books)
     {
         system("cls");
@@ -119,7 +165,8 @@ class clsStartLibrary
                 showBooksScreen(books.getBooks());
                 break;
             case enOption::findBook:
-                break;
+                selectOptionFind(books);
+                return;
             case enOption::addBook:
                 break;
             case enOption::editBook:

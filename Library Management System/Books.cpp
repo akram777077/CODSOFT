@@ -82,32 +82,21 @@ const std::vector<Book>& Books::getBooksBy(enSearchWay way, const std::string& i
     filteredBooks.clear();
 
     // Lambda function to match the input with the appropriate field based on the search way
-    auto match = [&input](const std::string& field) -> bool {
-        return field.find(input) != std::string::npos;
-    };
-
-    // Iterate through the bookList and filter based on the search way
-    for (const auto& book : bookList) {
-        switch (way) {
-            case byTitle:
-                if (match(book.getTitle())) {
-                    filteredBooks.push_back(book);
-                }
-                break;
-            case byAuthor:
-                if (match(book.getAuthor())) {
-                    filteredBooks.push_back(book);
-                }
-                break;
-            case byISBN:
-                if (match(book.getISBN())) {
-                    filteredBooks.push_back(book);
-                }
-                break;
+    auto match = [&input,&way](const Book book) -> bool{
+        switch(way)
+        {
+            case enSearchWay::byAuthor:
+                return input==book.getAuthor();
+            case enSearchWay::byISBN:
+                return input==book.getISBN();
+            case enSearchWay::byTitle:
+                return input==book.getTitle();
             default:
-                throw std::invalid_argument("Invalid search way specified.");
+                return false;
+
         }
-    }
+    };
+    std::copy_if(bookList.begin(),bookList.end(),std::back_inserter(filteredBooks),match);
 
     return filteredBooks;
 }
