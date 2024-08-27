@@ -1,6 +1,7 @@
 #include"clsScreen.cpp"
 #include"Books.h"
 #include <iomanip>
+#include"clsValidations.cpp"
 enum enOption {showBooks=1,findBook,addBook,editBook,removeBook,chechoutBook,returnBook,EXIT};
 class clsStartLibrary
 {
@@ -47,23 +48,36 @@ class clsStartLibrary
     static void checkOutScreen(Books& library)
     {
         std::string isbn;
-        std::cout<<"Enter ISBN: ";
-        std::cin>>isbn;
-            try {
-                library.checkoutBook(isbn);
-                std::cout<<"[System] -> the book is checkout return it after 2 days from now..\n";
-            } 
-            catch (const std::runtime_error& e) {
-                std::cerr << "[System]-> " << e.what() << std::endl;
-            }
+        bool validate=1;
+        do 
+        {
+            std::cout<<"Enter ISBN: ";
+            std::getline(std::cin,isbn);
+            validate = clsValidations::isValidISBN(isbn,0);
+            if(!validate)
+                std::cout<<"[System] -> Enter valid ISBN (13 digits non empty)\n";
+        }while(!validate);
+        try {
+            library.checkoutBook(isbn);
+            std::cout<<"[System] -> the book is checkout return it after 2 days from now..\n";
+        } 
+        catch (const std::runtime_error& e) {
+            std::cerr << "[System]-> " << e.what() << std::endl;
+        }
 
     }
     
     static void returnBookScreen(Books& library) {
         std::string isbn;
-        std::cout << "Enter ISBN: ";
-        std::cin >> isbn;
-        
+        bool validate=1;
+        do 
+        {
+            std::cout<<"Enter ISBN: ";
+            std::getline(std::cin,isbn);
+            validate = clsValidations::isValidISBN(isbn,0);
+            if(!validate)
+                std::cout<<"[System] -> Enter valid ISBN (13 digits non empty)\n";
+        }while(!validate);
         try {
             std::time_t now = std::time(nullptr);
             std::time_t checkoutDate = library.getBooksBy(enSearchWay::byISBN,isbn)[0].getCheckoutDate()+( 2*24 * 60 * 60); 
@@ -114,7 +128,20 @@ class clsStartLibrary
     {
         std::string input;
         std::cout<<text;
-        std::getline(std::cin,input);
+        if(option == enSearchWay::byISBN)
+        {
+            bool validate=1;
+            do 
+            {
+                std::cout<<"Enter ISBN: ";
+                std::getline(std::cin,input);
+                validate = clsValidations::isValidISBN(input,0);
+                if(!validate)
+                    std::cout<<"[System] -> Enter valid ISBN (13 digits non empty)\n";
+            }while(!validate);
+        }
+        else
+            std::getline(std::cin,input);
         system("cls");
         showBooksScreen(books.getBooksBy(option,input));
 
@@ -192,22 +219,33 @@ class clsStartLibrary
         std::vector<Book> result;
         do
         {
-            std::cout<<"Enter ISBN: ";
-            std::getline(std::cin>>std::ws,input);
+            do 
+            {
+                std::cout<<"Enter ISBN: ";
+                std::getline(std::cin,input);
+                validate = clsValidations::isValidISBN(input,0);
+                if(!validate)
+                    std::cout<<"[System] -> Enter valid ISBN (13 digits non empty)\n";
+            }while(!validate);
             result = books.getBooksBy(enSearchWay::byISBN,input);
-
             target=(result.empty())?nullptr:&result[0];
             if(!target)
                 std::cout<<"[System] -> the book is not in the system\n";
         }while(!target);
+        system("cls");
         std::cout<<target->getDetails();
-        std::cout<<"press y/Y if you want update the book";
+        std::cout<<"press y/Y if you want update the book\n";
         if(char ch = _getch();ch != 'y' && ch != 'Y')
             return;
-        system("cls");
-        std::cout<<"\n[System] -> press Enter if you want keep the old naming..";
-        std::cout<<"\nEnter New ISBN: ";
-        std::getline(std::cin,title);
+        std::cout<<"[System] -> press Enter if you want keep the old naming..";
+        do 
+        {
+            std::cout<<"\nEnter New ISBN: ";
+            std::getline(std::cin,title);
+            validate = clsValidations::isValidISBN(title,1);
+            if(!validate)
+                std::cout<<"[System] -> Enter valid ISBN (13 digits)\n";
+        }while(!validate);
         std::cout<<"Enter title: ";
         std::getline(std::cin,title);
         std::cout<<"Enter author: ";
