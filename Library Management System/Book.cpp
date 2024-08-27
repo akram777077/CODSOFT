@@ -54,6 +54,7 @@ std::string Book::getDetails() const {
             << "Author: " << author << "\n"
             << "ISBN: " << isbn << "\n"
             << "Available: " << (available ? "Yes" : "No") << "\n"
-            << "Checkout Date: " << (checkoutDate ? std::ctime(&checkoutDate) : "Not checked out");
+            << "Checkout Date: " << (checkoutDate ? std::ctime(&checkoutDate) : "Not checked out")
+            <<"\n";
     return details.str();
 }

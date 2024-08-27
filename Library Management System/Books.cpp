@@ -62,13 +62,14 @@ void Books::removeBook(const std::string& bookISBN) {
                   [&bookISBN](const Book& b) { return b.getISBN() == bookISBN; }), bookList.end());
 }
 
-void Books::updateBook(const Book& book) {
+void Books::updateBook(const std::string& oldIsbn,const Book& book) {
     std::ostringstream oss;
     oss << "UPDATE Books SET Title='" << book.getTitle()
         << "', Author='" << book.getAuthor()
         << "', Available=" << book.isAvailable()
         << ", CheckoutDate=" << book.getCheckoutDate()
-        << " WHERE ISBN='" << book.getISBN() << "';";
+        << ", ISBN=" << book.getISBN()
+        << " WHERE ISBN='" << oldIsbn << "';";
     
     executeSQL(oss.str());
 }
@@ -77,7 +78,7 @@ const std::vector<Book>& Books::getBooks() const {
     return bookList;
 }
 
-const std::vector<Book>& Books::getBooksBy(enSearchWay way, const std::string& input) const {
+std::vector<Book>& Books::getBooksBy(enSearchWay way, const std::string& input){
     static std::vector<Book> filteredBooks; // To store the search results
     filteredBooks.clear();
 

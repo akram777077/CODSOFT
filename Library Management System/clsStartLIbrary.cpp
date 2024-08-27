@@ -110,7 +110,7 @@ class clsStartLibrary
             }
 
     }
-    static void showBooksWithOptions(enSearchWay option,const Books& books,const std::string& text)
+    static void showBooksWithOptions(enSearchWay option,Books& books,const std::string& text)
     {
         std::string input;
         std::cout<<text;
@@ -119,7 +119,7 @@ class clsStartLibrary
         showBooksScreen(books.getBooksBy(option,input));
 
     }
-    static void selectOptionFind(const Books& books)
+    static void selectOptionFind(Books& books)
     {
         do 
         {
@@ -138,7 +138,7 @@ class clsStartLibrary
         }while(1);
 
     }
-    static void selectOptionFind(enSearchWay options,const Books& books)
+    static void selectOptionFind(enSearchWay options,Books& books)
     {
         system("cls");
         switch(options)
@@ -156,6 +156,80 @@ class clsStartLibrary
         std::cout<<"Press Any key to coninue";
         clsScreen::pressKey();
     }
+    static void addBook(Books& books)
+    {
+        bool validate = 1; 
+        std::string input,title,author;
+        do 
+        {
+            std::cout<<"Enter ISBN: ";
+            std::getline(std::cin>>std::ws,input);
+            validate=books.getBooksBy(enSearchWay::byISBN,input).empty();
+            if(!validate)
+                std::cout<<"[System] -> the book is in the system\n";
+        }while(!validate);
+        std::cout<<"Enter title: ";
+        std::getline(std::cin,title);
+        std::cout<<"Enter author: ";
+        std::getline(std::cin,author);
+        std::cout<<"press y/Y to save the book";
+        char ch = _getch();
+        std::cout<<"\n[System] -> ";
+        if(ch=='y' || ch=='Y')
+        {
+            
+            books.addBook(Book(title,author,input,1));
+            std::cout<<"The book is adding in the system\n";
+        }
+        else
+            std::cout<<"The book is not adding in the system\n";
+    }
+    static void editBook(Books& books)
+    {
+        bool validate = 1; 
+        std::string input,title,author,isbn;
+        Book* target=nullptr;
+        std::vector<Book> result;
+        do
+        {
+            std::cout<<"Enter ISBN: ";
+            std::getline(std::cin>>std::ws,input);
+            result = books.getBooksBy(enSearchWay::byISBN,input);
+
+            target=(result.empty())?nullptr:&result[0];
+            if(!target)
+                std::cout<<"[System] -> the book is not in the system\n";
+        }while(!target);
+        std::cout<<target->getDetails();
+        std::cout<<"press y/Y if you want update the book";
+        if(char ch = _getch();ch != 'y' && ch != 'Y')
+            return;
+        system("cls");
+        std::cout<<"\n[System] -> press Enter if you want keep the old naming..";
+        std::cout<<"\nEnter New ISBN: ";
+        std::getline(std::cin,title);
+        std::cout<<"Enter title: ";
+        std::getline(std::cin,title);
+        std::cout<<"Enter author: ";
+        std::getline(std::cin,author);
+        std::cout<<"press y/Y to edit the book";
+        char ch = _getch();
+        std::cout<<"\n[System] -> ";
+        if(ch=='y' || ch=='Y')
+        {
+            if(!title.empty())
+                target->setTitle(title);
+            if(!isbn.empty())
+                target->setISBN(isbn);
+            if(!author.empty())
+                target->setAuthor(author);
+            books.updateBook(input,*target);
+            std::cout<<"The book update in the system";
+        }
+        else
+            std::cout<<"The book is not update in the system";
+        std::cout<<std::endl;
+    }
     static void selectOption(enOption option , Books& books)
     {
         system("cls");
@@ -168,8 +242,10 @@ class clsStartLibrary
                 selectOptionFind(books);
                 return;
             case enOption::addBook:
+                addBook(books);
                 break;
             case enOption::editBook:
+                editBook(books);
                 break;
             case enOption::removeBook:
                 deleteBookScreen(books);

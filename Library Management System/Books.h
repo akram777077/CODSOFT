@@ -21,9 +21,9 @@ public:
     void loadBooksFromDB();
     void addBook(const Book& book);
     void removeBook(const std::string& bookISBN);
-    void updateBook(const Book& book);
+    void updateBook(const std::string& oldIsbn,const Book& book);
     const std::vector<Book>& getBooks() const;
-    const std::vector<Book>& getBooksBy(enSearchWay way, const std::string& input) const;
+    std::vector<Book>& getBooksBy(enSearchWay way, const std::string& input);
 
     void checkoutBook(const std::string& bookISBN);
     void returnBook(const std::string& bookISBN);
