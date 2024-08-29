@@ -57,7 +57,7 @@ To run any of these projects on your local machine:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/akram777077/CODSOFT
+   git clone https://github.com/akram777077/CODSOFT.git
    ```
 2. Navigate to the desired project directory:
    ```bash
