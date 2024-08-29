@@ -189,8 +189,14 @@ class clsStartLibrary
         std::string input,title,author;
         do 
         {
-            std::cout<<"Enter ISBN: ";
-            std::getline(std::cin>>std::ws,input);
+            do 
+            {
+                std::cout<<"Enter ISBN: ";
+                std::getline(std::cin,input);
+                validate = clsValidations::isValidISBN(input,0);
+                if(!validate)
+                    std::cout<<"[System] -> Enter valid ISBN (13 digits non empty)\n";
+            }while(!validate);
             validate=books.getBooksBy(enSearchWay::byISBN,input).empty();
             if(!validate)
                 std::cout<<"[System] -> the book is in the system\n";
